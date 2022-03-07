@@ -93,7 +93,7 @@ users = ([us.id, us.screen_name, us.followers, us.age, us.followers_growth_rate,
 
 #write csv file with all users info, 0 or 1 for not micro or microinfluencer, topic
 header = ["id","screen_name","followers","age","followers_growth_rate","followers_following_ratio","tweet_freq","micro", "topic"]
-with open('usersLarge.csv', 'w', encoding='UTF8', newline='') as f:
+with open('users.csv', 'w', encoding='UTF8', newline='') as f:
     writer = csv.writer(f)
 
     # write the header
