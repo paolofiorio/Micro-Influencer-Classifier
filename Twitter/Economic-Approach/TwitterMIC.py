@@ -56,7 +56,7 @@ def evaluate_user_age(creation):
 def most_common(lst):
     return max(set(lst), key=lst.count)
 
-#clean tweet
+#nlp clean tweet sentence based
 def clean_tweet(tweet):
     try:
         language = detect(tweet)
@@ -78,7 +78,7 @@ def clean_tweet(tweet):
     temp = re.sub('\[.*\].*',' ', temp) #remove []
     temp = re.sub("[^a-z]"," ", temp) #remove numbers
     temp = temp.split()
-    temp = [w for w in temp if not w in stop]
+    temp = [w for w in temp if not w in stop] #remove stopwords
     temp = [WordNetLemmatizer().lemmatize(w, pos='v') for w in temp] #not for sentence based
     return temp
 
@@ -89,6 +89,7 @@ consumer_secret = ''
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 api = tweepy.API(auth)
 
+#insert from command line list of users and topic of interest
 parser = argparse.ArgumentParser()
 parser.add_argument('--users', help='users list input', type=str, required=True)
 parser.add_argument('--topic', help='topic input', type=str, required = True)
@@ -97,8 +98,6 @@ users= [str(item) for item in args.users.split(',')]
 topic = args.topic
 
 #useful lists
-#users = ["ADDiane", "LanaToro21"]
-#topic ="sustainability"
 language = ["en"]
 users_returned = []
 users_id = []
@@ -215,15 +214,15 @@ for name in users:
                             neg.append(s)
         
     #evaluate how many times the topic is written inside tweets
-    #print(f, "topic word over",t, "tweets with", wo, "total words")
+    print(f, "topic word over",t, "tweets with", wo, "total words")
     percT = ((f)/t)*100
     tweetsPercentageL.append(percT)
 
     #evaluate percentage of word topic written with respect to all words
     percW = ((f)/wo)*100
     wordsPercentageL.append(percW)
-    #print("Percentage of topic", topic," in tweets = ", percT, "%")
-    #print("Percentage of topic", topic," in words = ", percW, "%")
+    print("Percentage of topic", topic," in tweets = ", percT, "%")
+    print("Percentage of topic", topic," in words = ", percW, "%")
     
     #evaluate most common language for the user
     finalLanguage = most_common(langs)
@@ -255,7 +254,7 @@ df['positiveSentiment'] =positiveL
 df['neutralSentiment']= neutralL
 df['negativeSentiment']=negativeL
 
-
+#select X
 X = df.loc[:, ["followers", "age", "followers_growth_rate", "followers_following_ratio", "tweet_freq","interactions_no_retweets","topicInTweetsPercentage", "topicInWordsPercentage", 
 "positiveSentiment","neutralSentiment" ,"negativeSentiment"]]
 X = X.to_numpy()
@@ -264,7 +263,7 @@ X = X.to_numpy()
 Ypredict = Pickled_XGB_Model.predict(X)
 YpredictMicroTopic = Pickled_XGB_ModelMicroTopic.predict(X) 
 
-
+#output for each user the result for both Micro Influencer and Micro Topic Influencer classification
 for i in range(len(users)):
     if(Ypredict[i]==1):
         print(users[i],"is a microinfluencer")
